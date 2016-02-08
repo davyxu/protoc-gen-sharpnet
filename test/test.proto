@@ -1,0 +1,21 @@
+syntax = "proto2";
+package gamedef;
+
+enum JobType
+{
+	None = 0;
+	Student = 1;
+	Worker = 2;
+}
+
+message Profile
+{
+	enum MsgID{ ID = 0; }
+
+	optional int32 Age = 10;
+	optional string Name = 20;
+	optional JobType Job = 30;
+	optional double Double = 40;
+	optional bool Single = 50;
+	repeated int64 IDs = 100;
+}

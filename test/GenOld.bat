@@ -1,0 +1,1 @@
+".\protogen\protogen.exe" -i:test.proto -o:test_old.cs
