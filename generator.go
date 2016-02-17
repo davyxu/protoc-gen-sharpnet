@@ -2,11 +2,11 @@ package main
 
 import (
 	"bytes"
-	plugin "github.com/davyxu/pbmeta/proto/compiler"
-	//	"github.com/golang/protobuf/proto"
 	"fmt"
 	"os"
 	"strings"
+
+	plugin "github.com/davyxu/pbmeta/proto/compiler"
 )
 
 type Generator struct {

@@ -1,14 +1,15 @@
 package main
 
 import (
+	"io/ioutil"
+	"os"
+	"path"
+
 	"github.com/davyxu/golog"
 	"github.com/davyxu/pbmeta"
 	pbprotos "github.com/davyxu/pbmeta/proto"
 	plugin "github.com/davyxu/pbmeta/proto/compiler"
 	"github.com/golang/protobuf/proto"
-	"io/ioutil"
-	"os"
-	"path"
 )
 
 var log *golog.Logger = golog.New("main")
