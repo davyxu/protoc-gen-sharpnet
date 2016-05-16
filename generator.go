@@ -27,8 +27,11 @@ func New() *Generator {
 
 // Error reports a problem, including an error, and exits the program.
 func (self *Generator) Error(err error, msgs ...string) {
-	s := strings.Join(msgs, " ") + ":" + err.Error()
-	log.Errorln("protoc-gen-sharpnet, error:", s)
+	if err != nil {
+		s := strings.Join(msgs, " ") + ":" + err.Error()
+		log.Errorln("protoc-gen-sharpnet, error:", s)
+	}
+
 	os.Exit(1)
 }
 

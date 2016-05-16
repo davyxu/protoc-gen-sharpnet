@@ -26,7 +26,16 @@
 
 # 使用方法
 
-protoc --plugin=protoc-gen-sharpnet=path\to\protoc-gen-sharpnet --sharpnet_out . --proto_path "." PROTO_FILE
+* 兼容protogen输出的格式
+	
+	protoc --plugin=protoc-gen-sharpnet=path\to\protoc-gen-sharpnet --sharpnet_out . --proto_path "." PROTO_FILE
+	
+* 扩展支持hasfield
+
+	protoc --plugin=protoc-gen-sharpnet=path\to\protoc-gen-sharpnet --sharpnet_out use_hasfield:. --proto_path "." PROTO_FILE
+
+	P.S. HasField特性是C++库支持功能, 用于判断某字段是否被序列化(设置)过.
+	性能上有bool赋值的轻度损耗以及内存轻度损耗
 
 # 使用情况
 

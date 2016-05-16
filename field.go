@@ -122,11 +122,12 @@ func printField(gen *Generator, fd *pbmeta.FieldDescriptor, msg *pbmeta.Descript
 	//  private int _Age = default(int);
 
 	if fd.IsRepeated() {
-		gen.Println("private readonly ", typeStr, " ", memberVar, " = new ", typeStr, "();")
+		gen.Println("readonly ", typeStr, " ", memberVar, " = new ", typeStr, "();")
 
 	} else {
 
-		gen.Println("private ", typeStr, " ", memberVar, " = ", getDefaultValue(fd), ";")
+		gen.Println(typeStr, " ", memberVar, " = ", getDefaultValue(fd), ";")
+		gen.Println("bool _has", fd.Name(), " = false;")
 
 	}
 
@@ -154,10 +155,24 @@ func printField(gen *Generator, fd *pbmeta.FieldDescriptor, msg *pbmeta.Descript
 	gen.Println("get { return ", memberVar, "; }")
 
 	if !fd.IsRepeated() {
-		gen.Println("set { ", memberVar, " = value; }")
+		gen.Println("set { ", memberVar, " = value; ")
+		gen.Println("      _has", fd.Name(), " = true;")
+		gen.Println("}")
 	}
 
 	gen.Out()
 	gen.Println("}")
+
+	gen.Println()
+
+	if !fd.IsRepeated() {
+		gen.Println("public bool Has", fd.Name())
+		gen.Println("{")
+		gen.In()
+		gen.Println("get { return _has", fd.Name(), "; }")
+		gen.Println("set { _has", fd.Name(), " = value; }")
+		gen.Out()
+		gen.Println("}")
+	}
 
 }

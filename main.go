@@ -14,6 +14,8 @@ import (
 
 var log *golog.Logger = golog.New("main")
 
+var use_hasField bool
+
 func main() {
 	gen := New()
 
@@ -30,6 +32,11 @@ func main() {
 
 	if len(gen.Request.FileToGenerate) == 0 {
 		gen.Fail("no files to generate")
+	}
+
+	// 启用带has字段的生成
+	if gen.Request.GetParameter() == "use_hasfield" {
+		use_hasField = true
 	}
 
 	// 建立解析池

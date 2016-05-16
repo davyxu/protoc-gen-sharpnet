@@ -1,1 +1,1 @@
-"..\proto\protoc.exe" .\test.proto --plugin=protoc-gen-sharpnet=..\..\..\..\..\bin\protoc-gen-sharpnet.exe --sharpnet_out . --proto_path "."
+"..\proto\protoc.exe" .\test.proto --plugin=protoc-gen-sharpnet=..\..\..\..\..\bin\protoc-gen-sharpnet.exe --sharpnet_out use_hasfield:. --proto_path "."
