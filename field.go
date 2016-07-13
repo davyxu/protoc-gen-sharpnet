@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/davyxu/pbmeta"
-	pbprotos "github.com/davyxu/pbmeta/proto"
 	"strconv"
 	"strings"
+
+	"github.com/davyxu/pbmeta"
+	pbprotos "github.com/davyxu/pbmeta/proto"
 )
 
 func fieldTypeString(fd *pbmeta.FieldDescriptor) string {
@@ -87,6 +88,11 @@ func getDefaultValue(fd *pbmeta.FieldDescriptor) string {
 		return strconv.Quote(fd.DefaultValue())
 	case pbprotos.FieldDescriptorProto_TYPE_ENUM:
 		ed := fd.EnumDesc()
+
+		if ed == nil {
+			return fd.DefaultValue()
+		}
+
 		if ed.ValueCount() > 0 {
 
 			var defaultValue string
