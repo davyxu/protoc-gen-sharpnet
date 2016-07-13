@@ -29,6 +29,10 @@ func fieldTypeString(fd *pbmeta.FieldDescriptor) string {
 		ret = "string"
 	case pbprotos.FieldDescriptorProto_TYPE_INT64:
 		ret = "long"
+	case pbprotos.FieldDescriptorProto_TYPE_UINT64:
+		ret = "ulong"
+	case pbprotos.FieldDescriptorProto_TYPE_BYTES:
+		ret = "byte[]"
 	case pbprotos.FieldDescriptorProto_TYPE_ENUM,
 		pbprotos.FieldDescriptorProto_TYPE_MESSAGE:
 		ret = fd.FullTypeName()
@@ -79,6 +83,10 @@ func getDefaultValue(fd *pbmeta.FieldDescriptor) string {
 		return wrapDefaultValue(fd, "double")
 	case pbprotos.FieldDescriptorProto_TYPE_INT64:
 		return wrapDefaultValue(fd, "long")
+	case pbprotos.FieldDescriptorProto_TYPE_UINT64:
+		return wrapDefaultValue(fd, "ulong")
+	case pbprotos.FieldDescriptorProto_TYPE_BYTES:
+		return wrapDefaultValue(fd, "byte[]")
 	case pbprotos.FieldDescriptorProto_TYPE_STRING:
 		v := strings.TrimSpace(fd.DefaultValue())
 		if v != "" {

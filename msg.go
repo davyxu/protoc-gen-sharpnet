@@ -10,6 +10,16 @@ func printMessage(gen *Generator, msg *pbmeta.Descriptor, file *pbmeta.FileDescr
 	gen.Println("{")
 	gen.In()
 
+	gen.Println()
+
+	for i := 0; i < msg.NestedMsg.MessageCount(); i++ {
+
+		nestedMsg := msg.NestedMsg.Message(i)
+		printMessage(gen, nestedMsg, file)
+	}
+
+	gen.Println()
+
 	gen.Println("public ", msg.Name(), "() {}")
 	gen.Println()
 
