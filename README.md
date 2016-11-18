@@ -52,6 +52,12 @@
 
 	https://github.com/mgravell/protobuf-net
 	
+* protogen工具
+	https://github.com/floatinghotpot/protogen
+	
+# 贡献者
+
+机械教条(egmkang@outlook.com) 提供use_hasfield无效的bug,及fixed等类型的增强
 	
 # 备注
 

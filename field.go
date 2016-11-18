@@ -16,9 +16,9 @@ func fieldTypeString(fd *pbmeta.FieldDescriptor) string {
 	switch fd.Type() {
 
 	case pbprotos.FieldDescriptorProto_TYPE_INT32:
-		ret = "int"
+		ret = "Int32"
 	case pbprotos.FieldDescriptorProto_TYPE_UINT32:
-		ret = "uint"
+		ret = "UInt32"
 	case pbprotos.FieldDescriptorProto_TYPE_BOOL:
 		ret = "bool"
 	case pbprotos.FieldDescriptorProto_TYPE_FLOAT:
@@ -28,11 +28,25 @@ func fieldTypeString(fd *pbmeta.FieldDescriptor) string {
 	case pbprotos.FieldDescriptorProto_TYPE_STRING:
 		ret = "string"
 	case pbprotos.FieldDescriptorProto_TYPE_INT64:
-		ret = "long"
+		ret = "Int64"
 	case pbprotos.FieldDescriptorProto_TYPE_UINT64:
-		ret = "ulong"
+		ret = "UInt64"
 	case pbprotos.FieldDescriptorProto_TYPE_BYTES:
 		ret = "byte[]"
+
+	case pbprotos.FieldDescriptorProto_TYPE_FIXED64:
+		ret = "UInt64"
+	case pbprotos.FieldDescriptorProto_TYPE_FIXED32:
+		ret = "UInt32"
+	case pbprotos.FieldDescriptorProto_TYPE_SFIXED64:
+		ret = "Int64"
+	case pbprotos.FieldDescriptorProto_TYPE_SFIXED32:
+		ret = "Int32"
+	case pbprotos.FieldDescriptorProto_TYPE_SINT64:
+		ret = "Int64"
+	case pbprotos.FieldDescriptorProto_TYPE_SINT32:
+		ret = "Int32"
+
 	case pbprotos.FieldDescriptorProto_TYPE_ENUM,
 		pbprotos.FieldDescriptorProto_TYPE_MESSAGE:
 		ret = fd.FullTypeName()
@@ -53,8 +67,15 @@ func getDataFormat(fd *pbmeta.FieldDescriptor) string {
 		pbprotos.FieldDescriptorProto_TYPE_MESSAGE,
 		pbprotos.FieldDescriptorProto_TYPE_BOOL:
 		return "Default"
-	case pbprotos.FieldDescriptorProto_TYPE_FLOAT:
+	case pbprotos.FieldDescriptorProto_TYPE_FLOAT,
+		pbprotos.FieldDescriptorProto_TYPE_FIXED64,
+		pbprotos.FieldDescriptorProto_TYPE_FIXED32,
+		pbprotos.FieldDescriptorProto_TYPE_SFIXED64,
+		pbprotos.FieldDescriptorProto_TYPE_SFIXED32:
 		return "FixedSize"
+	case pbprotos.FieldDescriptorProto_TYPE_SINT32,
+		pbprotos.FieldDescriptorProto_TYPE_SINT64:
+		return "ZigZag"
 	}
 
 	return "TwosComplement"
@@ -72,9 +93,9 @@ func wrapDefaultValue(fd *pbmeta.FieldDescriptor, typestr string) string {
 func getDefaultValue(fd *pbmeta.FieldDescriptor) string {
 	switch fd.Type() {
 	case pbprotos.FieldDescriptorProto_TYPE_INT32:
-		return wrapDefaultValue(fd, "int")
+		return wrapDefaultValue(fd, "Int32")
 	case pbprotos.FieldDescriptorProto_TYPE_UINT32:
-		return wrapDefaultValue(fd, "uint")
+		return wrapDefaultValue(fd, "UInt32")
 	case pbprotos.FieldDescriptorProto_TYPE_BOOL:
 		return wrapDefaultValue(fd, "bool")
 	case pbprotos.FieldDescriptorProto_TYPE_FLOAT:
@@ -82,11 +103,24 @@ func getDefaultValue(fd *pbmeta.FieldDescriptor) string {
 	case pbprotos.FieldDescriptorProto_TYPE_DOUBLE:
 		return wrapDefaultValue(fd, "double")
 	case pbprotos.FieldDescriptorProto_TYPE_INT64:
-		return wrapDefaultValue(fd, "long")
+		return wrapDefaultValue(fd, "Int64")
 	case pbprotos.FieldDescriptorProto_TYPE_UINT64:
-		return wrapDefaultValue(fd, "ulong")
+		return wrapDefaultValue(fd, "UInt64")
 	case pbprotos.FieldDescriptorProto_TYPE_BYTES:
 		return wrapDefaultValue(fd, "byte[]")
+	case pbprotos.FieldDescriptorProto_TYPE_FIXED64:
+		return wrapDefaultValue(fd, "UInt64")
+	case pbprotos.FieldDescriptorProto_TYPE_FIXED32:
+		return wrapDefaultValue(fd, "UInt32")
+	case pbprotos.FieldDescriptorProto_TYPE_SFIXED64:
+		return wrapDefaultValue(fd, "Int64")
+	case pbprotos.FieldDescriptorProto_TYPE_SFIXED32:
+		return wrapDefaultValue(fd, "Int32")
+	case pbprotos.FieldDescriptorProto_TYPE_SINT64:
+		return wrapDefaultValue(fd, "Int64")
+	case pbprotos.FieldDescriptorProto_TYPE_SINT32:
+		return wrapDefaultValue(fd, "Int32")
+
 	case pbprotos.FieldDescriptorProto_TYPE_STRING:
 		v := strings.TrimSpace(fd.DefaultValue())
 		if v != "" {
@@ -141,7 +175,10 @@ func printField(gen *Generator, fd *pbmeta.FieldDescriptor, msg *pbmeta.Descript
 	} else {
 
 		gen.Println(typeStr, " ", memberVar, " = ", getDefaultValue(fd), ";")
-		gen.Println("bool _has", fd.Name(), " = false;")
+
+		if use_hasField {
+			gen.Println("bool _has", fd.Name(), " = false;")
+		}
 
 	}
 
@@ -169,9 +206,15 @@ func printField(gen *Generator, fd *pbmeta.FieldDescriptor, msg *pbmeta.Descript
 	gen.Println("get { return ", memberVar, "; }")
 
 	if !fd.IsRepeated() {
-		gen.Println("set { ", memberVar, " = value; ")
-		gen.Println("      _has", fd.Name(), " = true;")
-		gen.Println("}")
+
+		if use_hasField {
+			gen.Println("set { ", memberVar, " = value; ")
+			gen.Println("      _has", fd.Name(), " = true;")
+			gen.Println("}")
+		} else {
+			gen.Println("set { ", memberVar, " = value; }")
+		}
+
 	}
 
 	gen.Out()
@@ -179,7 +222,7 @@ func printField(gen *Generator, fd *pbmeta.FieldDescriptor, msg *pbmeta.Descript
 
 	gen.Println()
 
-	if !fd.IsRepeated() {
+	if use_hasField && !fd.IsRepeated() {
 		gen.Println("public bool Has", fd.Name())
 		gen.Println("{")
 		gen.In()

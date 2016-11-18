@@ -16,6 +16,8 @@ func printFile(gen *Generator, file *pbmeta.FileDescriptor) {
 	}
 	gen.Out()
 
+	gen.Println("using System;")
+	gen.Println()
 	gen.Println("namespace ", file.PackageName())
 	gen.Println("{")
 	gen.In()
